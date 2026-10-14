@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parvaz Daily | My Magical Journal</title>
+<style>
+:root {
+  --cream: #faf3e8;
+  --paper: #fffaf2;
+  --brown: #76563f;
+  --dark: #443126;
+  --gold: #c7a46a;
+  --muted: #a18a75;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--dark);
+  background:
+    radial-gradient(ellipse at top, #fffaf2, transparent 65%),
+    var(--cream);
+  min-height: 100vh;
+}
+header {
+  text-align: center;
+  padding: 30px 16px 20px;
+  position: relative;
+  overflow: hidden;
+}
+h1 {
+  font-size: clamp(2rem, 7vw, 3.5rem);
+  margin: 8px 0;
+  color: var(--brown);
+  letter-spacing: 2px;
+}
+.subtitle { color: var(--muted); font-style: italic; }
+.books {
+  height: 75px;
+  position: relative;
+  overflow: hidden;
+}
+.book {
+  position: absolute;
+  font-size: 32px;
+  animation: fly 7s ease-in-out infinite alternate;
+}
+.book:nth-child(1) { left: 12%; top: 20px; }
+.book:nth-child(2) { left: 46%; top: 5px; animation-delay: -2s; }
+.book:nth-child(3) { right: 12%; top: 22px; animation-delay: -4s; }
+@keyframes fly {
+  0% { transform: translate(0, 8px) rotate(-12deg); }
+  50% { transform: translate(18px, -15px) rotate(8deg); }
+  100% { transform: translate(-8px, 5px) rotate(-5deg); }
+}
+nav {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  background: rgba(250,243,232,.94);
+  z-index: 5;
+  border-bottom: 1px solid #eadbc7;
+}
+nav button, .action {
+  border: 1px solid #ddc7ad;
+  background: var(--paper);
+  color: var(--brown);
+  border-radius: 22px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font: inherit;
+}
+nav button.active, .action.primary {
+  background: var(--brown);
+  color: white;
+}
+main {
+  max-width: 950px;
+  padding: 18px;
+  margin: auto;
+}
+.page { display: none; }
+.page.active { display: block; animation: appear .35s ease; }
+@keyframes appear {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card {
+  background: rgba(255,250,242,.92);
+  border: 1px solid #eadbc7;
+  border-radius: 18px;
+  padding: 20px;
+  margin: 12px 0;
+  box-shadow: 0 7px 22px #76563f0c;
+}
+h2 { color: var(--brown); margin-top: 0; }
+h3 { color: var(--brown); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.stat {
+  background: #f2e4d1;
+  border-radius: 14px;
+  padding: 16px;
+}
+.big { font-size: 1.7rem; margin-bottom: 5px; }
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0 12px;
+  border: 1px solid #dfccb5;
+  background: #fffdf8;
+  border-radius: 10px;
+  color: var(--dark);
+  font: inherit;
+}
+textarea { min-height: 85px; resize: vertical; }
+label { font-size: .95rem; }
+form .action { margin-top: 3px; }
+.entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-bottom: 1px solid #eee1d1;
+  padding: 12px 0;
+}
+.entry:last-child { border-bottom: none; }
+.entry .details { flex: 1; overflow-wrap: anywhere; }
+.entry.done .details { text-decoration: line-through; opacity: .55; }
+.entry input[type="checkbox"] { width: auto; margin-top: 5px; }
+.delete {
+  border: 0;
+  background: #f3e5d9;
+  color: #805844;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.mood-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.mood {
+  font-size: 1.5rem;
+  border: 1px solid #e4d2bd;
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+}
+.mood.selected { background: #ead8bd; border-color: var(--brown); }
+small, .muted { color: var(--muted); }
+footer { text-align: center; padding: 30px 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <div class="books" aria-hidden="true">
+    <span class="book">📖</span>
+    <span class="book">✨📚</span>
+    <span class="book">📕</span>
+  </div>
+  <h1>Parvaz Daily</h1>
+  <p class="subtitle">A little magic in every day ✧</p>
+  <p id="today"></p>
+</header>
+
+<nav id="navigation">
+  <button class="active" data-page="home">⌂ Home</button>
+  <button data-page="routine">☼ Daily routine</button>
+  <button data-page="lessons">✎ Lessons</button>
+  <button data-page="mood">☾ My mood</button>
+  <button data-page="novels">📚 Novels</button>
+  <button data-page="food">♡ Food</button>
+  <button data-page="sports">❋ Sports</button>
+  <button data-page="journal">✧ Journal</button>
+</nav>
+
+<main>
+<section class="page active" id="home">
+  <div class="card">
+    <h2>Welcome to your little world ✨</h2>
+    <p>Every small step is part of your story. Make today your own.</p>
+  </div>
+  <div class="grid">
+    <div class="stat"><div class="big">☁️</div><strong>My day</strong><p id="taskSummary">0 tasks completed</p></div>
+    <div class="stat"><div class="big">📖</div><strong>My library</strong><p id="bookSummary">0 novels saved</p></div>
+    <div class="stat"><div class="big">🌷</div><strong>My feelings</strong><p id="moodSummary">How are you feeling?</p></div>
+  </div>
+  <div class="card">
+    <h2>Today's little intention</h2>
+    <form id="intentionForm">
+      <label for="intention">What matters to you today?</label>
+      <input id="intention" placeholder="Today, I want to..." />
+      <button class="action primary">Save intention</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>A note from your magical library</h2>
+    <p>“You don't have to do everything today. Just begin.”</p>
+  </div>
+</section>
+
+<section class="page" id="routine">
+  <div class="card">
+    <h2>☼ My daily routine</h2>
+    <form id="routineForm">
+      <label for="routineText">Task</label>
+      <input id="routineText" required placeholder="e.g. Read for 20 minutes" />
+      <label for="routineTime">Time (optional)</label>
+      <input id="routineTime" type="time" />
+      <button class="action primary">+ Add task</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Today's tasks</h3>
+    <div id="routineList"></div>
+  </div>
+</section>
+
+<section class="page" id="lessons">
+  <div class="card">
+    <h2>✎ My lessons</h2>
+    <form id="lessonForm">
+      <label for="lessonName">Subject</label>
+      <input id="lessonName" required placeholder="Subject name" />
+      <label for="lessonDetails">Study plan or notes</label>
+      <textarea id="lessonDetails" placeholder="What do you want to learn?"></textarea>
+      <label for="lessonDate">Date (optional)</label>
+      <input id="lessonDate" type="date" />
+      <button class="action primary">+ Add lesson</button>
+    </form>
+  </div>
+  <div class="card"><h3>My study list</h3><div id="lessonList"></div></div>
+</section>
+
+<section class="page" id="mood">
+  <div class="card">
+    <h2>☾ How is your heart today?</h2>
+    <p>Choose the feeling that fits you best.</p>
+    <div class="mood-buttons" id="moodButtons">
+      <button class="mood" type="button" data-mood="Happy" aria-label="Happy">😊</button>
+      <button class="mood" type="button" data-mood="Calm" aria-label="Calm">🌿</button>
+      <button class="mood" type="button" data-mood="Excited" aria-label="Excited">✨</button>
+      <button class="mood" type="button" data-mood="Tired" aria-label="Tired">😴</button>
+      <button class="mood" type="button" data-mood="Sad" aria-label="Sad">🌧️</button>
+      <button class="mood" type="button" data-mood="Anxious" aria-label="Anxious">☁️</button>
+    </div>
+    <form id="moodForm">
+      <label for="moodNote">What is on your mind?</label>
+      <textarea id="moodNote" placeholder="Write without judging yourself..."></textarea>
+      <button class="action primary">Save today's mood</button>
+    </form>
+  </div>
+  <div class="card"><h3>My mood notes</h3><div id="moodList"></div></div>
+</section>
+
+<section class="page" id="novels">
+  <div class="card">
+    <h2>📚 My magical library</h2>
+    <form id="novelForm">
+      <label for="novelName">Book title</label>
+      <input id="novelName" required placeholder="Title of the novel" />
+      <label for="novelAuthor">Author</label>
+      <input id="novelAuthor" placeholder="Author's name" />
+      <label for="novelStatus">Reading status</label>
+      <select id="novelStatus">
+        <option>Want to read</option>
+        <option>Reading</option>
+        <option>Finished</option>
+    </select>
+      <label for="novelReview">Review or thoughts</label>
+      <textarea id="novelReview" placeholder="What did this story make you think about?"></textarea>
+      <button class="action primary">+ Add to library</button>
+    </form>
+  </div>
+  <div class="card"><h3>My novels</h3><div id="novelList"></div></div>
+</section>
+
+<section class="page" id="food">
+  <div class="card">
+    <h2>♡ My food journal</h2>
+    <form id="foodForm">
+      <label for="foodType">Meal</label>
+      <select id="foodType">
+        <option>Breakfast</option><option>Lunch</option>
+        <option>Dinner</option><option>Snack</option>
+      </select>
+      <label for="foodDetails">What did you eat?</label>
+      <textarea id="foodDetails" required placeholder="Write down your meal..."></textarea>
+      <button class="action primary">+ Save meal</button>
+    </form>
+  </div>
+  <div class="card"><h3>My meals</h3><div id="foodList"></div></div>
+</section>
+
+<section class="page" id="sports">
+  <div class="card">
+    <h2>❋ Movement & sports</h2>
+    <form id="sportsForm">
+      <label for="sportName">Activity</label>
+      <input id="sportName" required placeholder="e.g. Walking, dancing, cycling" />
+      <label for="sportDuration">Duration in minutes (optional)</label>
+      <input id="sportDuration" type="number" min="0" placeholder="20" />
+      <label for="sportNote">Notes</label>
+      <textarea id="sportNote" placeholder="How did it feel?"></textarea>
+      <button class="action primary">+ Save activity</button>
+    </form>
+  </div>
+  <div class="card"><h3>My activities</h3><div id="sportsList"></div></div>
+</section>
+
+<section class="page" id="journal">
+  <div class="card">
+    <h2>✧ My private journal</h2>
+    <form id="journalForm">
+      <label for="journalTitle">Title</label>
+      <input id="journalTitle" required placeholder="A thought, an idea, a memory..." />
+      <label for="journalText">Your words</label>
+      <textarea id="journalText" required placeholder="Dear diary..."></textarea>
+      <button class="action primary">Save entry</button>
+    </form>
+  </div>
+  <div class="card"><h3>My entries</h3><div id="journalList"></div></div>
+</section>
+
+<div class="card">
+  <h3>✧ Your data, your choice</h3>
+  <p class="muted">Your entries are saved in this browser on this device. Export a backup regularly, especially before clearing browser data.</p>
+  <button class="action" id="exportBtn">Download backup</button>
+  <button class="action" id="importBtn">Restore backup</button>
+  <input id="importFile" type="file" accept="application/json,.json" hidden />
+</div>
+</main>
+<footer>Made with warmth, books & a little magic ✧</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const keys = ["routine","lessons","moods","novels","food","sports","journal"];
+let data = {};
+let selectedMood = "";
+
+function loadData() {
+  try {
+    data = JSON.parse(localStorage.getItem("parvazDailyData") || "{}");
+  } catch { data = {}; }
+  keys.forEach(k => { if (!Array.isArray(data[k])) data[k] = []; });
+  if (!data.settings) data.settings = {};
+}
+function saveData() {
+  localStorage.setItem("parvazDailyData", JSON.stringify(data));
+  renderAll();
+}
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+function addEntry(key, item) {
+  data[key].unshift({id: Date.now() + Math.random(), date: new Date().toISOString(), ...item});
+  saveData();
+}
+function removeEntry(key, id) {
+  data[key] = data[key].filter(x => String(x.id) !== String(id));
+  saveData();
+}
+function renderList(key, elementId, formatter, checkable=false) {
+  const el = $(elementId);
+  if (!data[key].length) {
+    el.innerHTML = '<p class="muted">Your page is waiting for its first little entry ✨</p>';
+    return;
+  }
+  el.innerHTML = data[key].map(item => `
+    <div class="entry ${item.done ? "done" : ""}">
+      ${checkable ? `<input type="checkbox" aria-label="Mark completed" data-check="${esc(item.id)}" ${item.done ? "checked" : ""}>` : ""}
+      <div class="details">${formatter(item)}</div>
+      <button class="delete" type="button" data-delete="${esc(item.id)}" data-key="${key}" aria-label="Delete entry">Delete</button>
+    </div>`).join("");
+}
+function renderAll() {
+  renderList("routine","routineList",x =>
+    `<strong>${esc(x.text)}</strong><br><small>${esc(x.time || "Anytime")}</small>`,true);
+  renderList("lessons","lessonList",x =>
+    `<strong>${esc(x.name)}</strong><p>${esc(x.details)}</p><small>${esc(x.date || "")}</small>`,true);
+  renderList("moods","moodList",x =>
+    `<strong>${esc(x.mood)}</strong><p>${esc(x.note)}</p><small>${new Date(x.date).toLocaleDateString()}</small>`);
+  renderList("novels","novelList",x =>
+    `<strong>${esc(x.name)}</strong> · ${esc(x.author || "Unknown author")}<p>${esc(x.status)}</p><p>${esc(x.review)}</p>`,true);
+  renderList("food","foodList",x =>
+    `<strong>${esc(x.type)}</strong><p>${esc(x.details)}</p>`);
+  renderList("sports","sportsList",x =>
+    `<strong>${esc(x.name)}</strong><p>${esc(x.duration ? x.duration + " minutes" : "")}</p><p>${esc(x.note)}</p>`);
+  renderList("journal","journalList",x =>
+    `<strong>${esc(x.title)}</strong><p>${esc(x.text)}</p><small>${new Date(x.date).toLocaleDateString()}</small>`);
+  const done = data.routine.filter(x => x.done).length;
+  $("taskSummary").textContent = `${done} of ${data.routine.length} tasks completed`;
+  $("bookSummary").textContent = `${data.novels.length} novels saved`;
+  const todayMood = data.moods[0];
+  $("moodSummary").textContent = todayMood ? todayMood.mood : "How are you feeling?";
+  $("intention").value = data.settings.intention || "";
+}
+function bindForm(id, handler) {
+  $(id).addEventListener("submit", e => {
+    e.preventDefault();
+    handler();
+  });
+}
+bindForm("routineForm", () => {
+  addEntry("routine",{text:$("routineText").value.trim(),time:$("routineTime").value,done:false});
+  $("routineForm").reset();
+});
+bindForm("lessonForm", () => {
+  addEntry("lessons",{name:$("lessonName").value.trim(),details:$("lessonDetails").value.trim(),date:$("lessonDate").value,done:false});
+  $("lessonForm").reset();
+});
+$("moodButtons").addEventListener("click", e => {
+  const btn = e.target.closest("[data-mood]");
+  if (!btn) return;
+  selectedMood = btn.dataset.mood;
+  document.querySelectorAll(".mood").forEach(b => b.classList.toggle("selected", b === btn));
+});
+bindForm("moodForm", () => {
+  if (!selectedMood) { alert("Please choose a mood first."); return; }
+  addEntry("moods",{mood:selectedMood,note:$("moodNote").value.trim()});
+  $("moodNote").value = "";
+  selectedMood = "";
+  document.querySelectorAll(".mood").forEach(b => b.classList.remove("selected"));
+});
+bindForm("novelForm", () => {
+  addEntry("novels",{name:$("novelName").value.trim(),author:$("novelAuthor").value.trim(),status:$("novelStatus").value,review:$("novelReview").value.trim(),done:$("novelStatus").value==="Finished"});
+  $("novelForm").reset();
+});
+bindForm("foodForm", () => {
+  addEntry("food",{type:$("foodType").value,details:$("foodDetails").value.trim()});
+  $("foodForm").reset();
+});
+bindForm("sportsForm", () => {
+  addEntry("sports",{name:$("sportName").value.trim(),duration:$("sportDuration").value,note:$("sportNote").value.trim()});
+  $("sportsForm").reset();
+});
+bindForm("journalForm", () => {
+  addEntry("journal",{title:$("journalTitle").value.trim(),text:$("journalText").value.trim()});
+  $("journalForm").reset();
+});
+bindForm("intentionForm", () => {
+  data.settings.intention = $("intention").value.trim();
+  saveData();
+  alert("Your intention is saved ✨");
+});
+$("navigation").addEventListener("click", e => {
+  const btn = e.target.closest("[data-page]");
+  if (!btn) return;
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b === btn));
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === btn.dataset.page));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.addEventListener("click", e => {
+  const del = e.target.closest("[data-delete]");
+  if (del && confirm("Delete this entry?")) removeEntry(del.dataset.key, del.dataset.delete);
+  const check = e.target.closest("[data-check]");
+  if (check) {
+    const key = check.closest(".entry").querySelector("[data-key]")?.dataset.key;
+    const section = check.closest(".page")?.id;
+    const map = {routine:"routine",lessons:"lessons",novels:"novels"};
+    const listKey = map[section];
+    if (!listKey) return;
+    const item = data[listKey].find(x => String(x.id) === check.dataset.check);
+    if (item) { item.done = check.checked; saveData(); }
+  }
+});
+$("exportBtn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "parvaz-daily-backup.json"; a.click();
+  URL.revokeObjectURL(url);
+});
+$("importBtn").addEventListener("click", () => $("importFile").click());
+$("importFile").addEventListener("change", async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const incoming = JSON.parse(await file.text());
+    if (!incoming || !keys.every(k => Array.isArray(incoming[k]))) throw new Error("Invalid backup");
+    if (!confirm("Restore this backup? Your current entries will be replaced.")) return;
+    data = incoming;
+    saveData();
+    alert("Backup restored ✨");
+  } catch { alert("This backup file is invalid."); }
+  e.target.value = "";
+});
+$("today").textContent = new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+loadData();
+renderAll();
+</script>
+</body>
+</html>
